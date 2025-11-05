@@ -123,3 +123,5 @@ CREATE POLICY "Enable all access for authenticated users" ON public.orders
 
 CREATE POLICY "Enable all access for authenticated users" ON public.order_items
   FOR ALL USING (auth.role() = 'authenticated');
+
+
