@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createProduct, updateProduct, type Product } from '@/app/actions/products'
+import { createProduct, updateProduct, type Product, getCategoriesForSelect } from '@/app/actions/products'
 import { Loader2 } from 'lucide-react'
 
 interface ProductDialogProps {
@@ -33,6 +33,21 @@ interface ProductDialogProps {
 export function ProductDialog({ open, onOpenChange, product, mode }: ProductDialogProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([])
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true)
+
+  // Load categories on component mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      const { categories, error } = await getCategoriesForSelect()
+      if (!error) {
+        setCategories(categories || [])
+      }
+      setIsLoadingCategories(false)
+    }
+    
+    loadCategories()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -72,63 +87,89 @@ export function ProductDialog({ open, onOpenChange, product, mode }: ProductDial
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Product Name *</Label>
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
               <Input
                 id="name"
                 name="name"
                 defaultValue={product?.name}
+                className="col-span-3"
                 required
-                disabled={loading}
               />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="sku">SKU *</Label>
+            
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="description" className="text-right mt-2">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                name="description"
+                defaultValue={product?.description || ''}
+                className="col-span-3"
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="category_id" className="text-right">
+                Category
+              </Label>
+              {isLoadingCategories ? (
+                <div className="col-span-3 flex items-center justify-center p-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </div>
+              ) : (
+                <div className="col-span-3">
+                  <Select 
+                    name="category_id" 
+                    defaultValue={product?.category_id || undefined}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="sku" className="text-right">
+                SKU
+              </Label>
               <Input
                 id="sku"
                 name="sku"
                 defaultValue={product?.sku}
+                className="col-span-3"
                 required
-                disabled={loading}
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              name="description"
-              defaultValue={product?.description || ''}
-              disabled={loading}
-              rows={3}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
-              <Input
-                id="category"
-                name="category"
-                defaultValue={product?.category}
-                required
-                disabled={loading}
-                placeholder="e.g., Medications, Food, Grooming"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="unit">Unit</Label>
-              <Input
-                id="unit"
-                name="unit"
-                defaultValue={product?.unit || 'unit'}
-                disabled={loading}
-                placeholder="e.g., unit, kg, liter"
-              />
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="unit" className="text-right">
+                Unit
+              </Label>
+              <div className="col-span-3">
+                <Input
+                  id="unit"
+                  name="unit"
+                  defaultValue={product?.unit || 'unit'}
+                  disabled={loading}
+                  placeholder="e.g., unit, kg, liter"
+                />
+              </div>
             </div>
           </div>
 

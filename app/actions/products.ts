@@ -7,7 +7,8 @@ export type Product = {
   id: string
   name: string
   description: string | null
-  category: string
+  category_id: string | null
+  category_name?: string
   sku: string
   price: number
   cost: number | null
@@ -19,12 +20,22 @@ export type Product = {
   updated_at: string
 }
 
+export type ProductWithCategory = Product & {
+  categories: {
+    id: string
+    name: string
+  } | null
+}
+
 export async function getProducts() {
   const supabase = await createClient()
   
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(`
+      *,
+      categories (id, name)
+    `)
     .order('created_at', { ascending: false })
   
   if (error) {
@@ -32,7 +43,29 @@ export async function getProducts() {
     return { products: [], error: error.message }
   }
   
-  return { products: data as Product[], error: null }
+  // Transform the data to match the Product type
+  const products = data.map(product => ({
+    ...product,
+    category_id: product.category_id,
+    category_name: product.categories?.name || null
+  }))
+  
+  return { products, error: null }
+}
+
+export async function getCategoriesForSelect() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, name')
+    .order('name', { ascending: true })
+
+  if (error) {
+    console.error('Error fetching categories:', error)
+    return { categories: [], error: error.message }
+  }
+  
+  return { categories: data, error: null }
 }
 
 export async function createProduct(formData: FormData) {

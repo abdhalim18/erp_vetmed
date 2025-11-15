@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
   Package,
+  Tags,
   Users,
   ShoppingCart,
   FileText,
@@ -24,6 +25,11 @@ const menuItems = [
     icon: Package,
   },
   {
+    title: 'Categories',
+    href: '/admin/categories',
+    icon: Tags,
+  },
+  {
     title: 'Customers',
     href: '/admin/customers',
     icon: Users,
@@ -32,11 +38,6 @@ const menuItems = [
     title: 'Orders',
     href: '/admin/orders',
     icon: ShoppingCart,
-  },
-  {
-    title: 'Reports',
-    href: '/admin/reports',
-    icon: FileText,
   },
   {
     title: 'Settings',
