@@ -273,13 +273,14 @@ export function ProductsClient({ initialProducts, stats }: ProductsClientProps) 
                 <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Harga</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Stok</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-center text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Batch</th>
                 <th className="px-5 py-3 text-right text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-16 text-center">
+                  <td colSpan={8} className="px-5 py-16 text-center">
                     <div className="flex flex-col items-center text-gray-400">
                       <Package className="h-10 w-10 mb-3 text-gray-300" />
                       <p className="text-sm font-medium text-gray-500">
@@ -318,17 +319,19 @@ export function ProductsClient({ initialProducts, stats }: ProductsClientProps) 
                         {STATUS_LABELS[product.status] || product.status}
                       </span>
                     </td>
+                    <td className="px-4 py-3.5 text-center">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50"
+                        onClick={() => router.push(`/admin/products/${product.id}/batches`)}
+                        title="Kelola Batch Stok"
+                      >
+                        <Layers className="h-3.5 w-3.5" />
+                      </Button>
+                    </td>
                     <td className="px-5 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50"
-                          onClick={() => router.push(`/admin/products/${product.id}/batches`)}
-                          title="Kelola Batch Stok"
-                        >
-                          <Layers className="h-3.5 w-3.5" />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
